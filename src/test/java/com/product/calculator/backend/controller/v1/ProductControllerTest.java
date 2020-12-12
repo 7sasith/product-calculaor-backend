@@ -21,7 +21,6 @@ import java.util.List;
 
 import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.is;
-import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
@@ -125,8 +124,26 @@ class ProductControllerTest {
         mockMvc.perform(post("/api/v1/product/calculate")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(asJsonString(priceCalculatorDTO)))
-                .andExpect(content().contentType(MediaType.APPLICATION_JSON_VALUE));
-//                .andExpect(status().isOk()).andExpect(jsonPath("$.total", is(290)));
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON_VALUE))
+                .andExpect(status().isOk()).andExpect(jsonPath("$", is(100)));
+    }
+
+    @Test
+    void calculateWhenProductNotFound() throws Exception{
+        //given
+        PriceCalculatorDTO priceCalculatorDTO = new PriceCalculatorDTO();
+        priceCalculatorDTO.setUnit(Unit.SINGLE_UNIT);
+        priceCalculatorDTO.setProductId("4");
+        priceCalculatorDTO.setQuantity(2);
+
+        when(productService.getProduct("4")).thenReturn(null);
+
+        //then
+        mockMvc.perform(post("/api/v1/product/calculate")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(asJsonString(priceCalculatorDTO)))
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON_VALUE))
+                .andExpect(status().isBadRequest()).andExpect(jsonPath("$", is("Product Not Found")));
     }
 
     private static String asJsonString(final Object obj) {
