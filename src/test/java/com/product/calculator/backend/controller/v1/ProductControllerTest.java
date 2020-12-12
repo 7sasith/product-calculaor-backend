@@ -119,12 +119,14 @@ class ProductControllerTest {
         priceCalculatorDTO.setQuantity(2);
 
         when(productService.getProduct("1")).thenReturn(product1);
+        when(productService.calculate(product1, 2)).thenReturn(new BigDecimal(100));
 
         //then
         mockMvc.perform(post("/api/v1/product/calculate")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(asJsonString(priceCalculatorDTO)))
-                .andExpect(status().isOk());
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON_VALUE));
+//                .andExpect(status().isOk()).andExpect(jsonPath("$.total", is(290)));
     }
 
     private static String asJsonString(final Object obj) {

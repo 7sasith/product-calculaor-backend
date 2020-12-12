@@ -6,6 +6,7 @@ import com.product.calculator.backend.dto.ProductUnitPriceDTO;
 import com.product.calculator.backend.enums.Unit;
 import com.product.calculator.backend.service.ProductService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -29,8 +30,8 @@ public class ProductController {
         return productService.generatePriceList(id);
     }
 
-    @PostMapping("calculate")
-    public ResponseEntity calculate(@RequestBody PriceCalculatorDTO priceCalculatorDTO) {
+    @PostMapping(path = "calculate", produces = MediaType.APPLICATION_JSON_VALUE)
+    public ResponseEntity calculate(@RequestBody PriceCalculatorDTO priceCalculatorDTO) throws Exception{
 
         Product product = productService.getProduct(priceCalculatorDTO.getProductId());
         if(product == null) {
